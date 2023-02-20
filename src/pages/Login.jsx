@@ -29,10 +29,9 @@ const Login = () => {
 
   const handleLogin = async (e, email, password) => {
     e.preventDefault();
-    const url = `${process.env.REACT_APP_API_HOST}/login`;
     setLoading(true);
     try {
-      const res = await fetch(url, {
+      const res = await fetch(`${process.env.REACT_APP_API_HOST}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
