@@ -25,6 +25,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const res = await fetch(
           `${process.env.REACT_APP_API_HOST}/admin/data`,
