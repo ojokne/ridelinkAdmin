@@ -145,7 +145,7 @@ const Pending = () => {
                             UGX
                           </span>
                           <span className="text-muted">
-                            {order.productWeight}
+                            {order.amountQuoted}
                           </span>
                         </div>
                         <span

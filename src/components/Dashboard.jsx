@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaDollarSign,
   FaShoppingCart,
@@ -12,22 +12,16 @@ import PieChart from "./PieChart";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(false);
-  const { data, dataDispatch } = useData();
-
+  const { dataDispatch } = useData();
+  const [data, setData] = useState();
   const [confirmed, setConfirmed] = useState(0);
   const [revenue, setRevenue] = useState(0);
-  const effectRan = useRef(false);
-  const element =
-    data.orders.length > 0 ? (
-      <PieChart
-        confirmed={confirmed}
-        pending={data.orders.length - confirmed}
-      />
-    ) : (
-      <div className="lead text-muted">
-        <span>No orders to plot chart</span>
-      </div>
-    );
+  const [drivers, setDrivers] = useState([]);
+  const [clients, setClients] = useState([]);
+  const [trucks, setTrucks] = useState([]);
+  const [truckOwners, setTruckOwners] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [element, setElement] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,29 +37,44 @@ const Dashboard = () => {
           }
         );
         const data = await res.json();
+        setData((prev) => {
+          return { ...prev, data: data.data };
+        });
         dataDispatch({ type: ACTIONS.ADD_DATA, data: data.data });
+        if (data.data) {
+          setDrivers(data.data.drivers.length);
+          setClients(data.data.clients.length);
+          setTrucks(data.data.trucks.length);
+          setTruckOwners(data.data.truckOwners.length);
+          setOrders(data.data.orders.length);
 
+          for (let i = 0; i < data.data.orders.length; i++) {
+            let order = data.data.orders[i];
+            if (order.isConfirmed) {
+              setConfirmed((prev) => prev + 1);
+            }
+            setRevenue((prev) => prev + order.amountQuoted);
+          }
+        }
+        setElement(() => {
+          return data.data.orders.length > 0 ? (
+            <PieChart
+              confirmed={confirmed}
+              pending={data.data.orders.length - confirmed}
+            />
+          ) : (
+            <div className="lead text-muted">
+              <span>No orders to plot chart</span>
+            </div>
+          );
+        });
         setLoading(false);
       } catch (e) {
         console.log(e);
       }
     };
-    if (!effectRan.current) {
-      fetchData();
-      for (let i = 0; i < data.orders.length; i++) {
-        let order = data.orders[i];
-        if (order.isConfirmed) {
-          setConfirmed((prev) => prev + 1);
-        }
-        setRevenue((prev) => prev + order.amountQuoted);
-      }
-
-      return () => {
-        setConfirmed(0);
-        effectRan.current = true;
-      };
-    }
-  }, [data, dataDispatch]);
+    fetchData();
+  }, [confirmed, dataDispatch]);
 
   if (loading) {
     return <Loader loading={loading} description="Please wait" />;
@@ -88,7 +97,7 @@ const Dashboard = () => {
               <FaShoppingCart className="icon iconMenu me-3" />
             </span>
             <span className="me-3" style={{ fontSize: "30px" }}>
-              {data.orders.length}
+              {orders}
             </span>
           </div>
         </div>
@@ -120,7 +129,7 @@ const Dashboard = () => {
               <FaUser className="icon iconMenu me-3" />
             </span>
             <span className="me-3" style={{ fontSize: "30px" }}>
-              {data.clients.length}
+              {clients}
             </span>
           </div>
         </div>
@@ -136,7 +145,7 @@ const Dashboard = () => {
               <FaUser className="icon iconMenu me-3" />
             </span>
             <span className="me-3" style={{ fontSize: "30px" }}>
-              {data.drivers.length}
+              {drivers}
             </span>
           </div>
         </div>
@@ -152,7 +161,7 @@ const Dashboard = () => {
               <FaTruckMoving className="icon iconMenu me-3" />
             </span>
             <span className="me-3" style={{ fontSize: "30px" }}>
-              {data.trucks.length}
+              {trucks}
             </span>
           </div>
         </div>
@@ -168,7 +177,7 @@ const Dashboard = () => {
               <FaUser className="icon iconMenu me-3" />
             </span>
             <span className="me-3" style={{ fontSize: "30px" }}>
-              {data.truckOwners.length}
+              {truckOwners}
             </span>
           </div>
         </div>

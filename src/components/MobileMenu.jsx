@@ -7,15 +7,11 @@ import {
   FaTruckLoading,
   FaUser,
 } from "react-icons/fa";
-import { useAuthentication } from "../context/StateProvider";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { ACTIONS } from "../context/actions";
 
-const MobileMenu = () => {
+const MobileMenu = ({ handleShowMenu }) => {
   const navigate = useNavigate();
-
-  const { authDispatch } = useAuthentication();
 
   const handleLogout = async (e) => {
     e.preventDefault();
@@ -30,17 +26,22 @@ const MobileMenu = () => {
       });
       const data = await res.json();
       if (data.isLoggedOut) {
-        authDispatch({ type: ACTIONS.LOGOUT });
+        sessionStorage.removeItem("id");
         navigate("/login");
       }
     } catch (e) {
       console.log(e);
     }
   };
+
   return (
     <div className="py-1">
       <ul className="p1 m-1 list-unstyled">
-        <Link className="text-decoration-none" to="/">
+        <Link
+          className="text-decoration-none"
+          to="/"
+          onClick={() => handleShowMenu()}
+        >
           <li className="py-2 border-bottom liMenu d-flex justify-content-between align-items-center">
             <span className="text-muted">Dashboard</span>
             <span>
@@ -60,7 +61,11 @@ const MobileMenu = () => {
               Orders
             </button>
             <ul className="dropdown-menu" aria-labelledby="orders">
-              <Link className="text-decoration-none" to="pending">
+              <Link
+                className="text-decoration-none"
+                to="pending"
+                onClick={() => handleShowMenu()}
+              >
                 <li className="p-2 border-bottom d-flex align-items-center liMenu">
                   <span>
                     <FaClock
@@ -71,7 +76,11 @@ const MobileMenu = () => {
                   <span className="text-muted px-2">Pending</span>
                 </li>
               </Link>
-              <Link className="text-decoration-none" to="confirmed">
+              <Link
+                className="text-decoration-none"
+                to="confirmed"
+                onClick={() => handleShowMenu()}
+              >
                 <li className="p-2 d-flex align-items-center liMenu">
                   <span>
                     <FaCheck className="iconSmall" />
@@ -86,7 +95,11 @@ const MobileMenu = () => {
           </span>
         </li>
 
-        <Link className="text-decoration-none" to="clients">
+        <Link
+          className="text-decoration-none"
+          to="clients"
+          onClick={() => handleShowMenu()}
+        >
           <li className="py-2 border-bottom d-flex align-items-center liMenu d-flex justify-content-between align-items-center">
             <span className="text-muted">Clients</span>
             <span>
@@ -94,7 +107,11 @@ const MobileMenu = () => {
             </span>
           </li>
         </Link>
-        <Link className="text-decoration-none" to="drivers">
+        <Link
+          className="text-decoration-none"
+          to="drivers"
+          onClick={() => handleShowMenu()}
+        >
           <li className="py-2 border-bottom d-flex align-items-center liMenu d-flex justify-content-between align-items-center">
             <span className="text-muted">Drivers</span>
             <span>
@@ -103,7 +120,11 @@ const MobileMenu = () => {
           </li>
         </Link>
 
-        <Link className="text-decoration-none" to="trucks">
+        <Link
+          className="text-decoration-none"
+          to="trucks"
+          onClick={() => handleShowMenu()}
+        >
           <li className="py-2 border-bottom d-flex align-items-center liMenu d-flex justify-content-between align-items-center">
             <span className="text-muted">Trucks</span>
             <span>
@@ -111,7 +132,11 @@ const MobileMenu = () => {
             </span>
           </li>
         </Link>
-        <Link className="text-decoration-none" to="truck_owners">
+        <Link
+          className="text-decoration-none"
+          to="truck_owners"
+          onClick={() => handleShowMenu()}
+        >
           <li className="py-2 border-bottom d-flex align-items-center liMenu d-flex justify-content-between align-items-center">
             <span className="text-muted">Truck Owners</span>
             <span>
@@ -121,7 +146,10 @@ const MobileMenu = () => {
         </Link>
         <li
           className="py-2 d-flex align-items-center liMenu d-flex justify-content-between align-items-center"
-          onClick={(e) => handleLogout(e)}
+          onClick={(e) => {
+            handleShowMenu();
+            handleLogout(e);
+          }}
         >
           <span className="text-muted">Logout</span>
           <span>
