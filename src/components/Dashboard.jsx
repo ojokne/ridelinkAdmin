@@ -57,25 +57,25 @@ const Dashboard = () => {
             setRevenue((prev) => prev + order.amountQuoted);
           }
         }
-        setElement(() => {
-          return data.data.orders.length > 0 ? (
-            <PieChart
-              confirmed={confirmed}
-              pending={data.data.orders.length - confirmed}
-            />
-          ) : (
-            <div className="lead text-muted">
-              <span>No orders to plot chart</span>
-            </div>
-          );
-        });
+        // setElement(() => {
+        //   return data.data.orders.length > 0 ? (
+        //     <PieChart
+        //       confirmed={confirmed}
+        //       pending={data.data.orders.length - confirmed}
+        //     />
+        //   ) : (
+        //     <div className="lead text-muted">
+        //       <span>No orders to plot chart</span>
+        //     </div>
+        //   );
+        // });
         setLoading(false);
       } catch (e) {
         console.log(e);
       }
     };
     fetchData();
-  }, [confirmed, dataDispatch]);
+  }, [dataDispatch]);
 
   if (loading) {
     return <Loader loading={loading} description="Please wait" />;

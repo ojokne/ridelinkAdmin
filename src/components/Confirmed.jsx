@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaCheck, FaShoppingCart } from "react-icons/fa";
 import { useData } from "../context/StateProvider";
 
@@ -7,25 +7,18 @@ const Confirmed = () => {
   const [delivered, setDelivered] = useState(0);
   const [confirmed, setConfirmed] = useState(0);
 
-  const effectRan = useRef(false);
-
   useEffect(() => {
-    if (!effectRan.current) {
-      for (let i = 0; i < data.orders.length; i++) {
-        let order = data.orders[i];
-        if (order.isConfirmed) {
-          setConfirmed((prev) => prev + 1);
-        }
+    for (let i = 0; i < data.orders.length; i++) {
+      let order = data.orders[i];
+      if (order.isConfirmed) {
+        setConfirmed((prev) => prev + 1);
       }
-      for (let i = 0; i < data.trips.length; i++) {
-        let trip = data.trips[i];
-        if (trip.idDelivered) {
-          setDelivered((prev) => prev + 1);
-        }
+    }
+    for (let i = 0; i < data.trips.length; i++) {
+      let trip = data.trips[i];
+      if (trip.idDelivered) {
+        setDelivered((prev) => prev + 1);
       }
-      return () => {
-        effectRan.current = true;
-      };
     }
   }, [data.trips, data.orders]);
   return (
