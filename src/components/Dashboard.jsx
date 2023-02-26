@@ -8,7 +8,7 @@ import {
 import { ACTIONS } from "../context/actions";
 import { useData } from "../context/StateProvider";
 import Loader from "./Loader";
-import PieChart from "./PieChart";
+// import PieChart from "./PieChart";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(false);
@@ -21,7 +21,7 @@ const Dashboard = () => {
   const [trucks, setTrucks] = useState([]);
   const [truckOwners, setTruckOwners] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [element, setElement] = useState(null);
+  // const [element, setElement] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -183,9 +183,9 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-      <div className="d-flex justify-content-center align-items-center flex-wrap p-4 m-3 bg-white shadow-sm rounded">
+      {/* <div className="d-flex justify-content-center align-items-center flex-wrap p-4 m-3 bg-white shadow-sm rounded">
         {element}
-      </div>
+      </div> */}
     </div>
   );
 };
