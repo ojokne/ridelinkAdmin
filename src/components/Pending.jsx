@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FaClock, FaTimes, FaTruckMoving } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useData } from "../context/StateProvider";
+import { Link } from "react-router-dom";
 
 const styles = {
   iconLarge: {
@@ -21,50 +22,53 @@ const Pending = () => {
   const [pending, setPending] = useState(0);
   const [cancelled, setCancelled] = useState(0);
   const [orders, setOrders] = useState([]);
+  const [display, setDisplay] = useState(false);
 
   const handleConfirm = (e, orderId, proposedScheduleDate) => {
     e.preventDefault();
     navigate("/confirm", { state: { orderId, proposedScheduleDate } });
   };
   useEffect(() => {
-    for (let i = 0; i < data.orders.length; i++) {
-      let order = data.orders[i];
-      if (!order.isConfirmed) {
-        setPending((prev) => prev + 1);
+    if (data.hasOwnProperty("orders")) {
+      if (data.clients.length) {
+        for (let i = 0; i < data.orders.length; i++) {
+          let order = data.orders[i];
+          if (!order.isConfirmed) {
+            setPending((prev) => prev + 1);
 
-        let amountQuoted = Number(order.amountQuoted).toLocaleString("en-Us");
-        let date = new Date(order.proposedScheduleDate).toDateString();
-        let obj = {
-          proposedScheduleDate: order.proposedScheduleDate,
-          amountQuoted,
-          date,
-          id: order.id,
-          productName: order.productName,
-          productWeight: order.productWeight,
-          pickupLocation: order.pickupLocation,
-          deliveryLocation: order.deliveryLocation,
-          deliveryInstructions: order.deliveryInstructions,
-        };
-        setOrders((prev) => [...prev, obj]);
-      }
+            let amountQuoted = Number(order.amountQuoted).toLocaleString(
+              "en-Us"
+            );
+            let date = new Date(order.proposedScheduleDate).toDateString();
+            let obj = {
+              proposedScheduleDate: order.proposedScheduleDate,
+              amountQuoted,
+              date,
+              id: order.id,
+              productName: order.productName,
+              productWeight: order.productWeight,
+              pickupLocation: order.pickupLocation,
+              deliveryLocation: order.deliveryLocation,
+              deliveryInstructions: order.deliveryInstructions,
+            };
+            setOrders((prev) => [...prev, obj]);
+          }
 
-      if (order.isCancelled) {
-        setCancelled((prev) => prev + 1);
+          if (order.isCancelled) {
+            setCancelled((prev) => prev + 1);
+          }
+        }
       }
+      setDisplay(true);
     }
-    return () => {
-      setPending(0);
-      setCancelled(0);
-      setOrders([]);
-    };
-  }, [data.trips, data.orders]);
+  }, [data]);
 
   return (
     <div>
       <div className="mx-3 pt-3 lead text-muted">
         <span>Pending Orders</span>
       </div>
-      {data.orders.length > 0 && (
+      {display && (
         <div className="d-flex   flex-wrap">
           <div
             style={{ width: "367px" }}
@@ -246,11 +250,13 @@ const Pending = () => {
             })}
         </div>
       )}
-
-      {data.orders.length === 0 && (
+      {!display && (
         <div className="d-flex justify-content-center align-items-center flex-wrap p-4 m-3 bg-white shadow-sm rounded">
-          <div className="lead text-muted">
-            <span>No orders have been placed yet</span>
+          <div className="lead text-muted text-center">
+            <p>No data to display</p>
+            <Link to="/" className="text-decoration-none">
+              Back home
+            </Link>
           </div>
         </div>
       )}
