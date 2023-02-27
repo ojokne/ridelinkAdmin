@@ -191,7 +191,7 @@ const Pending = () => {
                       </div>
                     </div>
                     <div className="d-flex flex-column my-2">
-                      <span className="px-1 text-muted">Date</span>
+                      <span className="px-1 text-muted">{order.date}</span>
                       <span
                         className="px-1"
                         style={{ fontSize: ".6em", fontWeight: "lighter" }}

@@ -44,7 +44,7 @@ const Confirm = () => {
       const data = await res.json();
       setLoading(false);
       if (data.isConfirmed) {
-        navigate("/confirmed");
+        navigate("/");
       } else {
         setAlert((prev) => {
           return {
