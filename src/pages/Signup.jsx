@@ -32,7 +32,6 @@ const Signup = () => {
             password,
             role: 0,
           }),
-          credentials: "include",
         }
       );
       const data = await res.json();

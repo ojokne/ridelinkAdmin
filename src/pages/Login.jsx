@@ -38,13 +38,14 @@ const Login = () => {
           password,
           role: 0,
         }),
-        credentials: "include",
-        mode: "cors",
       });
       const data = await res.json();
+      console.log(data);
       setLoading(false);
       if (data.isAuthenticated) {
-        sessionStorage.setItem("id", data.id);
+        sessionStorage.setItem("adminId", data.id);
+        sessionStorage.setItem("adminToken", data.token);
+
         navigate("/");
         setAlert((prev) => {
           return { ...prev, alert: false, message: "" };

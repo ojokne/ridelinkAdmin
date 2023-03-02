@@ -7,6 +7,7 @@ import {
 } from "react-icons/fa";
 import { ACTIONS } from "../context/actions";
 import { useData } from "../context/StateProvider";
+import useToken from "../utils/useToken";
 import Loader from "./Loader";
 // import PieChart from "./PieChart";
 
@@ -21,7 +22,9 @@ const Dashboard = () => {
   const [trucks, setTrucks] = useState([]);
   const [truckOwners, setTruckOwners] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [display, setDisplay] = useState(false);
   // const [element, setElement] = useState(null);
+  const token = useToken();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,8 +36,8 @@ const Dashboard = () => {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
+              Authorization: token,
             },
-            credentials: "include",
           }
         );
         const data = await res.json();
@@ -56,6 +59,7 @@ const Dashboard = () => {
             }
             setRevenue((prev) => prev + order.amountQuoted);
           }
+          setDisplay(true);
         }
         // setElement(() => {
         //   return data.data.orders.length > 0 ? (
@@ -85,104 +89,113 @@ const Dashboard = () => {
       <div className="mx-3 pt-3 lead text-muted">
         <span>Dashboard</span>
       </div>
-      <div className="d-flex justify-content-center align-items-center flex-wrap">
-        <div
-          style={{ width: "367px" }}
-          className="m-3 p-4 bg-white shadow-sm rounded"
-        >
-          <span className="text-muted" style={{ fontSize: "20px" }}>
-            Orders
-          </span>
-          <div className="d-flex align-items-center">
-            <span>
-              <FaShoppingCart className="icon iconMenu me-3" />
+      {display && (
+        <div className="d-flex justify-content-center align-items-center flex-wrap">
+          <div
+            style={{ width: "367px" }}
+            className="m-3 p-4 bg-white shadow-sm rounded"
+          >
+            <span className="text-muted" style={{ fontSize: "20px" }}>
+              Orders
             </span>
-            <span className="me-3" style={{ fontSize: "30px" }}>
-              {orders}
+            <div className="d-flex align-items-center">
+              <span>
+                <FaShoppingCart className="icon iconMenu me-3" />
+              </span>
+              <span className="me-3" style={{ fontSize: "30px" }}>
+                {orders}
+              </span>
+            </div>
+          </div>
+          <div
+            style={{ width: "367px" }}
+            className="m-3 p-4 bg-white shadow-sm rounded"
+          >
+            <span className="text-muted" style={{ fontSize: "20px" }}>
+              Revenue
             </span>
+            <div className="d-flex align-items-center">
+              <span>
+                <FaDollarSign className="icon iconMenu me-3" />
+              </span>
+              <span className="me-3" style={{ fontSize: "30px" }}>
+                {revenue.toLocaleString("en-US")}
+              </span>
+            </div>
+          </div>
+          <div
+            style={{ width: "367px" }}
+            className="m-3 p-4 bg-white shadow-sm rounded"
+          >
+            <span className="text-muted" style={{ fontSize: "20px" }}>
+              Clients
+            </span>
+            <div className="d-flex align-items-center">
+              <span>
+                <FaUser className="icon iconMenu me-3" />
+              </span>
+              <span className="me-3" style={{ fontSize: "30px" }}>
+                {clients}
+              </span>
+            </div>
+          </div>
+          <div
+            style={{ width: "367px" }}
+            className="m-3 p-4 bg-white shadow-sm rounded"
+          >
+            <span className="text-muted" style={{ fontSize: "20px" }}>
+              Drivers
+            </span>
+            <div className="d-flex align-items-center">
+              <span>
+                <FaUser className="icon iconMenu me-3" />
+              </span>
+              <span className="me-3" style={{ fontSize: "30px" }}>
+                {drivers}
+              </span>
+            </div>
+          </div>
+          <div
+            style={{ width: "367px" }}
+            className="m-3 p-4 bg-white shadow-sm rounded"
+          >
+            <span className="text-muted" style={{ fontSize: "20px" }}>
+              Trucks
+            </span>
+            <div className="d-flex align-items-center">
+              <span>
+                <FaTruckMoving className="icon iconMenu me-3" />
+              </span>
+              <span className="me-3" style={{ fontSize: "30px" }}>
+                {trucks}
+              </span>
+            </div>
+          </div>
+          <div
+            style={{ width: "367px" }}
+            className="m-3 p-4 bg-white shadow-sm rounded"
+          >
+            <span className="text-muted" style={{ fontSize: "20px" }}>
+              Truck Owners
+            </span>
+            <div className="d-flex align-items-center">
+              <span>
+                <FaUser className="icon iconMenu me-3" />
+              </span>
+              <span className="me-3" style={{ fontSize: "30px" }}>
+                {truckOwners}
+              </span>
+            </div>
           </div>
         </div>
-        <div
-          style={{ width: "367px" }}
-          className="m-3 p-4 bg-white shadow-sm rounded"
-        >
-          <span className="text-muted" style={{ fontSize: "20px" }}>
-            Revenue
-          </span>
-          <div className="d-flex align-items-center">
-            <span>
-              <FaDollarSign className="icon iconMenu me-3" />
-            </span>
-            <span className="me-3" style={{ fontSize: "30px" }}>
-              {revenue.toLocaleString("en-US")}
-            </span>
+      )}
+      {!display && (
+        <div className="d-flex justify-content-center align-items-center flex-wrap p-4 m-3 bg-white shadow-sm rounded">
+          <div className="lead text-muted text-center">
+            <p>No data to display</p>
           </div>
         </div>
-        <div
-          style={{ width: "367px" }}
-          className="m-3 p-4 bg-white shadow-sm rounded"
-        >
-          <span className="text-muted" style={{ fontSize: "20px" }}>
-            Clients
-          </span>
-          <div className="d-flex align-items-center">
-            <span>
-              <FaUser className="icon iconMenu me-3" />
-            </span>
-            <span className="me-3" style={{ fontSize: "30px" }}>
-              {clients}
-            </span>
-          </div>
-        </div>
-        <div
-          style={{ width: "367px" }}
-          className="m-3 p-4 bg-white shadow-sm rounded"
-        >
-          <span className="text-muted" style={{ fontSize: "20px" }}>
-            Drivers
-          </span>
-          <div className="d-flex align-items-center">
-            <span>
-              <FaUser className="icon iconMenu me-3" />
-            </span>
-            <span className="me-3" style={{ fontSize: "30px" }}>
-              {drivers}
-            </span>
-          </div>
-        </div>
-        <div
-          style={{ width: "367px" }}
-          className="m-3 p-4 bg-white shadow-sm rounded"
-        >
-          <span className="text-muted" style={{ fontSize: "20px" }}>
-            Trucks
-          </span>
-          <div className="d-flex align-items-center">
-            <span>
-              <FaTruckMoving className="icon iconMenu me-3" />
-            </span>
-            <span className="me-3" style={{ fontSize: "30px" }}>
-              {trucks}
-            </span>
-          </div>
-        </div>
-        <div
-          style={{ width: "367px" }}
-          className="m-3 p-4 bg-white shadow-sm rounded"
-        >
-          <span className="text-muted" style={{ fontSize: "20px" }}>
-            Truck Owners
-          </span>
-          <div className="d-flex align-items-center">
-            <span>
-              <FaUser className="icon iconMenu me-3" />
-            </span>
-            <span className="me-3" style={{ fontSize: "30px" }}>
-              {truckOwners}
-            </span>
-          </div>
-        </div>
-      </div>
+      )}
       {/* <div className="d-flex justify-content-center align-items-center flex-wrap p-4 m-3 bg-white shadow-sm rounded">
         {element}
       </div> */}

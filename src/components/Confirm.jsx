@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useData } from "../context/StateProvider";
+import useToken from "../utils/useToken";
 import Loader from "./Loader";
 
 const Confirm = () => {
@@ -17,6 +18,7 @@ const Confirm = () => {
     alert: false,
     message: "",
   });
+  const token = useToken();
 
   const handleConfirm = async (e) => {
     e.preventDefault();
@@ -31,6 +33,7 @@ const Confirm = () => {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            Authorization: token,
           },
           body: JSON.stringify({
             scheduleDate,
@@ -38,7 +41,6 @@ const Confirm = () => {
             truckId,
             role: 0,
           }),
-          credentials: "include",
         }
       );
       const data = await res.json();
