@@ -1,19 +1,36 @@
 import { useEffect, useState } from "react";
 import { useData } from "../context/StateProvider";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../config/firebase";
+import Loader from "./Loader";
 
 const Client = () => {
   const { data } = useData();
   const [display, setDisplay] = useState(false);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+
+  // useEffect(() => {
+  //   if (data.hasOwnProperty("clients")) {
+  //     if (data.clients.length) {
+  //       setDisplay(true);
+  //     }
+  //   }
+  // }, [data]);
 
   useEffect(() => {
-    if (data.hasOwnProperty("clients")) {
-      if (data.clients.length) {
-        setDisplay(true);
+    onAuthStateChanged(auth, (user) => {
+      setLoading(false);
+      if (!user) {
+        navigate("/login");
       }
-    }
-  }, [data]);
+    });
+  }, [navigate]);
 
+  if (loading) {
+    return <Loader loading={loading} description="Please wait" />;
+  }
   return (
     <div>
       <div className="mx-3 pt-3 lead text-muted">

@@ -3,6 +3,9 @@ import { FaClock, FaTimes, FaTruckMoving } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useData } from "../context/StateProvider";
 import { Link } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../config/firebase";
+import Loader from "./Loader";
 
 const styles = {
   iconLarge: {
@@ -23,46 +26,59 @@ const Pending = () => {
   const [cancelled, setCancelled] = useState(0);
   const [orders, setOrders] = useState([]);
   const [display, setDisplay] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const handleConfirm = (e, orderId, proposedScheduleDate) => {
     e.preventDefault();
     navigate("/confirm", { state: { orderId, proposedScheduleDate } });
   };
+  // useEffect(() => {
+  //   if (data.hasOwnProperty("orders")) {
+  //     if (data.clients.length) {
+  //       for (let i = 0; i < data.orders.length; i++) {
+  //         let order = data.orders[i];
+  //         if (!order.isConfirmed) {
+  //           setPending((prev) => prev + 1);
+
+  //           let amountQuoted = Number(order.amountQuoted).toLocaleString(
+  //             "en-Us"
+  //           );
+  //           let date = new Date(order.proposedScheduleDate).toDateString();
+  //           let obj = {
+  //             proposedScheduleDate: order.proposedScheduleDate,
+  //             amountQuoted,
+  //             date,
+  //             id: order.id,
+  //             productName: order.productName,
+  //             productWeight: order.productWeight,
+  //             pickupLocation: order.pickupLocation,
+  //             deliveryLocation: order.deliveryLocation,
+  //             deliveryInstructions: order.deliveryInstructions,
+  //           };
+  //           setOrders((prev) => [...prev, obj]);
+  //         }
+
+  //         if (order.isCancelled) {
+  //           setCancelled((prev) => prev + 1);
+  //         }
+  //       }
+  //     }
+  //     setDisplay(true);
+  //   }
+  // }, [data]);
+
   useEffect(() => {
-    if (data.hasOwnProperty("orders")) {
-      if (data.clients.length) {
-        for (let i = 0; i < data.orders.length; i++) {
-          let order = data.orders[i];
-          if (!order.isConfirmed) {
-            setPending((prev) => prev + 1);
-
-            let amountQuoted = Number(order.amountQuoted).toLocaleString(
-              "en-Us"
-            );
-            let date = new Date(order.proposedScheduleDate).toDateString();
-            let obj = {
-              proposedScheduleDate: order.proposedScheduleDate,
-              amountQuoted,
-              date,
-              id: order.id,
-              productName: order.productName,
-              productWeight: order.productWeight,
-              pickupLocation: order.pickupLocation,
-              deliveryLocation: order.deliveryLocation,
-              deliveryInstructions: order.deliveryInstructions,
-            };
-            setOrders((prev) => [...prev, obj]);
-          }
-
-          if (order.isCancelled) {
-            setCancelled((prev) => prev + 1);
-          }
-        }
+    onAuthStateChanged(auth, (user) => {
+      setLoading(false);
+      if (!user) {
+        navigate("/login");
       }
-      setDisplay(true);
-    }
-  }, [data]);
+    });
+  }, [navigate]);
 
+  if (loading) {
+    return <Loader loading={loading} description="Please wait" />;
+  }
   return (
     <div>
       <div className="mx-3 pt-3 lead text-muted">

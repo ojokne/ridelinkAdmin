@@ -1,27 +1,46 @@
+import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { FaCheck, FaClock } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { auth } from "../config/firebase";
 
 import { useData } from "../context/StateProvider";
+import Loader from "./Loader";
 
 const Truck = () => {
   const { data } = useData();
   const [available, setAvailable] = useState(0);
   const [display, setDisplay] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   if (data.hasOwnProperty("trucks")) {
+  //     if (data.trucks.length) {
+  //       for (let i = 0; i < data.trucks.length; i++) {
+  //         let truck = data.trucks[i];
+  //         if (truck.isAvailable) {
+  //           setAvailable((prev) => prev + 1);
+  //         }
+  //       }
+  //       setDisplay(true);
+  //     }
+  //   }
+  // }, [data]);
 
   useEffect(() => {
-    if (data.hasOwnProperty("trucks")) {
-      if (data.trucks.length) {
-        for (let i = 0; i < data.trucks.length; i++) {
-          let truck = data.trucks[i];
-          if (truck.isAvailable) {
-            setAvailable((prev) => prev + 1);
-          }
-        }
-        setDisplay(true);
+    onAuthStateChanged(auth, (user) => {
+      setLoading(false);
+      if (!user) {
+        navigate("/login");
       }
-    }
-  }, [data]);
+    });
+  }, [navigate]);
+
+  if (loading) {
+    return <Loader loading={loading} description="Please wait" />;
+  }
+
   return (
     <div>
       <div className="mx-3 pt-3 lead text-muted">

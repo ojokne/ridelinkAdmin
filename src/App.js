@@ -19,17 +19,16 @@ function App() {
       <Routes>
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
-        <Route element={<ProtectedRoutes />}>
-          <Route path="/" element={<Home />}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="pending" element={<Pending />} />
-            <Route path="confirmed" element={<Confirmed />} />
-            <Route path="clients" element={<Client />} />
-            <Route path="drivers" element={<Driver />} />
-            <Route path="trucks" element={<Truck />} />
-            <Route path="truck_owners" element={<TruckOwner />} />
-            <Route path="confirm" element={<Confirm />} />
-          </Route>
+        <Route element={<ProtectedRoutes />}></Route>
+        <Route path="/" element={<Home />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="pending" element={<Pending />} />
+          <Route path="confirmed" element={<Confirmed />} />
+          <Route path="clients" element={<Client />} />
+          <Route path="drivers" element={<Driver />} />
+          <Route path="trucks" element={<Truck />} />
+          <Route path="truck_owners" element={<TruckOwner />} />
+          <Route path="confirm" element={<Confirm />} />
         </Route>
         <Route path="*" element={<p>Error page</p>} />
       </Routes>

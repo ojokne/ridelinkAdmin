@@ -1,3 +1,4 @@
+import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import {
   FaDollarSign,
@@ -5,6 +6,8 @@ import {
   FaTruckMoving,
   FaUser,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../config/firebase";
 import { ACTIONS } from "../context/actions";
 import { useData } from "../context/StateProvider";
 import useToken from "../utils/useToken";
@@ -23,64 +26,72 @@ const Dashboard = () => {
   const [truckOwners, setTruckOwners] = useState([]);
   const [orders, setOrders] = useState([]);
   const [display, setDisplay] = useState(false);
+  const navigate = useNavigate();
   // const [element, setElement] = useState(null);
-  const token = useToken();
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     setLoading(true);
+  //     try {
+  //       const res = await fetch(
+  //         `${process.env.REACT_APP_API_HOST}/admin/data`,
+  //         {
+  //           method: "GET",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //             Authorization: token,
+  //           },
+  //         }
+  //       );
+  //       const data = await res.json();
+  //       setData((prev) => {
+  //         return { ...prev, data: data.data };
+  //       });
+  //       dataDispatch({ type: ACTIONS.ADD_DATA, data: data.data });
+  //       if (data.data) {
+  //         setDrivers(data.data.drivers.length);
+  //         setClients(data.data.clients.length);
+  //         setTrucks(data.data.trucks.length);
+  //         setTruckOwners(data.data.truckOwners.length);
+  //         setOrders(data.data.orders.length);
+
+  //         for (let i = 0; i < data.data.orders.length; i++) {
+  //           let order = data.data.orders[i];
+  //           if (order.isConfirmed) {
+  //             setConfirmed((prev) => prev + 1);
+  //           }
+  //           setRevenue((prev) => prev + order.amountQuoted);
+  //         }
+  //         setDisplay(true);
+  //       }
+  //       // setElement(() => {
+  //       //   return data.data.orders.length > 0 ? (
+  //       //     <PieChart
+  //       //       confirmed={confirmed}
+  //       //       pending={data.data.orders.length - confirmed}
+  //       //     />
+  //       //   ) : (
+  //       //     <div className="lead text-muted">
+  //       //       <span>No orders to plot chart</span>
+  //       //     </div>
+  //       //   );
+  //       // });
+  //       setLoading(false);
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [dataDispatch]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(
-          `${process.env.REACT_APP_API_HOST}/admin/data`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: token,
-            },
-          }
-        );
-        const data = await res.json();
-        setData((prev) => {
-          return { ...prev, data: data.data };
-        });
-        dataDispatch({ type: ACTIONS.ADD_DATA, data: data.data });
-        if (data.data) {
-          setDrivers(data.data.drivers.length);
-          setClients(data.data.clients.length);
-          setTrucks(data.data.trucks.length);
-          setTruckOwners(data.data.truckOwners.length);
-          setOrders(data.data.orders.length);
-
-          for (let i = 0; i < data.data.orders.length; i++) {
-            let order = data.data.orders[i];
-            if (order.isConfirmed) {
-              setConfirmed((prev) => prev + 1);
-            }
-            setRevenue((prev) => prev + order.amountQuoted);
-          }
-          setDisplay(true);
-        }
-        // setElement(() => {
-        //   return data.data.orders.length > 0 ? (
-        //     <PieChart
-        //       confirmed={confirmed}
-        //       pending={data.data.orders.length - confirmed}
-        //     />
-        //   ) : (
-        //     <div className="lead text-muted">
-        //       <span>No orders to plot chart</span>
-        //     </div>
-        //   );
-        // });
-        setLoading(false);
-      } catch (e) {
-        console.log(e);
+    onAuthStateChanged(auth, (user) => {
+      setLoading(false);
+      if (!user) {
+        navigate("/login");
       }
-    };
-    fetchData();
-  }, [dataDispatch]);
-
+    });
+  }, [navigate]);
   if (loading) {
     return <Loader loading={loading} description="Please wait" />;
   }

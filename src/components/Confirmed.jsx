@@ -2,32 +2,51 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaCheck, FaShoppingCart } from "react-icons/fa";
 import { useData } from "../context/StateProvider";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../config/firebase";
+import Loader from "./Loader";
 
 const Confirmed = () => {
   const { data } = useData();
   const [delivered, setDelivered] = useState(0);
   const [confirmed, setConfirmed] = useState(0);
   const [display, setDisplay] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const navigate = useState(true);
+
+  // useEffect(() => {
+  //   if (data.hasOwnProperty("orders")) {
+  //     if (data.clients.length) {
+  //       for (let i = 0; i < data.orders.length; i++) {
+  //         let order = data.orders[i];
+  //         if (order.isConfirmed) {
+  //           setConfirmed((prev) => prev + 1);
+  //         }
+  //       }
+  //       for (let i = 0; i < data.trips.length; i++) {
+  //         let trip = data.trips[i];
+  //         if (trip.idDelivered) {
+  //           setDelivered((prev) => prev + 1);
+  //         }
+  //       }
+  //     }
+  //     setDisplay(true);
+  //   }
+  // }, [data]);
 
   useEffect(() => {
-    if (data.hasOwnProperty("orders")) {
-      if (data.clients.length) {
-        for (let i = 0; i < data.orders.length; i++) {
-          let order = data.orders[i];
-          if (order.isConfirmed) {
-            setConfirmed((prev) => prev + 1);
-          }
-        }
-        for (let i = 0; i < data.trips.length; i++) {
-          let trip = data.trips[i];
-          if (trip.idDelivered) {
-            setDelivered((prev) => prev + 1);
-          }
-        }
+    onAuthStateChanged(auth, (user) => {
+      setLoading(false);
+      if (!user) {
+        navigate("/login");
       }
-      setDisplay(true);
-    }
-  }, [data]);
+    });
+  }, [navigate]);
+
+  if (loading) {
+    return <Loader loading={loading} description="Please wait" />;
+  }
+
   return (
     <div>
       <div className="mx-3 pt-3 lead text-muted">
