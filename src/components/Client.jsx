@@ -21,10 +21,10 @@ const Client = () => {
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      setLoading(false);
       if (!user) {
         navigate("/login");
       }
+      setLoading(false);
     });
   }, [navigate]);
 

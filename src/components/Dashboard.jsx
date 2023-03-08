@@ -15,7 +15,7 @@ import Loader from "./Loader";
 // import PieChart from "./PieChart";
 
 const Dashboard = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { dataDispatch } = useData();
   const [data, setData] = useState();
   const [confirmed, setConfirmed] = useState(0);
@@ -86,10 +86,10 @@ const Dashboard = () => {
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      setLoading(false);
       if (!user) {
         navigate("/login");
       }
+      setLoading(false);
     });
   }, [navigate]);
   if (loading) {

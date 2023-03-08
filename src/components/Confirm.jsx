@@ -1,5 +1,7 @@
+import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { auth } from "../config/firebase";
 import { useData } from "../context/StateProvider";
 import useToken from "../utils/useToken";
 import Loader from "./Loader";
@@ -13,7 +15,7 @@ const Confirm = () => {
   const truckRef = useRef();
   const driverRef = useRef();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState({
     alert: false,
     message: "",
@@ -68,29 +70,41 @@ const Confirm = () => {
     }
   };
 
-  useEffect(() => {
-    if ((state?.id ?? false) && (state?.proposedScheduleDate ?? false)) {
-      navigate("/pending");
-    }
-    setScheduleDate(state.proposedScheduleDate);
-    for (let i = 0; i < data.trucks.length; i++) {
-      let truck = data.trucks[i];
-      if (truck.isAvailable) {
-        setAvailableTrucks((prev) => [...prev, truck]);
-      }
-    }
-    for (let i = 0; i < data.drivers.length; i++) {
-      let driver = data.drivers[i];
-      if (driver.isAvailable) {
-        setAvailableDrivers((prev) => [...prev, driver]);
-      }
-    }
-    return () => {
-      setAvailableTrucks([]);
-      setAvailableDrivers([]);
-    };
-  }, [data, state, navigate]);
+  // useEffect(() => {
+  //   if ((state?.id ?? false) && (state?.proposedScheduleDate ?? false)) {
+  //     navigate("/pending");
+  //   }
+  //   setScheduleDate(state.proposedScheduleDate);
+  //   for (let i = 0; i < data.trucks.length; i++) {
+  //     let truck = data.trucks[i];
+  //     if (truck.isAvailable) {
+  //       setAvailableTrucks((prev) => [...prev, truck]);
+  //     }
+  //   }
+  //   for (let i = 0; i < data.drivers.length; i++) {
+  //     let driver = data.drivers[i];
+  //     if (driver.isAvailable) {
+  //       setAvailableDrivers((prev) => [...prev, driver]);
+  //     }
+  //   }
+  //   return () => {
+  //     setAvailableTrucks([]);
+  //     setAvailableDrivers([]);
+  //   };
+  // }, [data, state, navigate]);
 
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        navigate("/login");
+      }
+      setLoading(false);
+    });
+  }, [navigate]);
+
+  if (loading) {
+    return <Loader loading={loading} description="Please wait" />;
+  }
   if (loading) {
     return <Loader loading={loading} description="Please wait" />;
   }

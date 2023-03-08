@@ -116,10 +116,10 @@ const Signup = () => {
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      setLoading(false);
       if (user) {
         navigate("/");
       }
+      setLoading(false);
     });
   }, [navigate]);
   if (loading) {
