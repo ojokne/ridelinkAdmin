@@ -19,17 +19,12 @@ const styles = {
   },
 };
 
-const Pending = () => {
+const Delivered = () => {
   const { orders } = useOrders();
   const navigate = useNavigate();
-  const [pending, setPending] = useState([]);
+  const [delivered, setDelivered] = useState([]);
   const [display, setDisplay] = useState(false);
   const [loading, setLoading] = useState(true);
-
-  const handleConfirm = (e, orderId, scheduleDate) => {
-    e.preventDefault();
-    navigate("/confirm", { state: { orderId, scheduleDate } });
-  };
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -40,11 +35,10 @@ const Pending = () => {
           if (orders.orders.length) {
             for (let i = 0; i < orders.orders.length; i++) {
               let order = orders.orders[i];
-              if (!order.isConfirmed) {
+              if (order.isDelivered) {
                 let amountQuoted = Number(order.amountQuoted).toLocaleString(
                   "en-Us"
                 );
-                let date = new Date(order.scheduleDate).toDateString();
 
                 order = {
                   ...order,
@@ -52,17 +46,19 @@ const Pending = () => {
                   scheduleDate: new Date(order.scheduleDate)
                     .toISOString()
                     .slice(0, 10),
-                  date,
                 };
-                setPending((prev) => [...prev, order]);
+                setDelivered((prev) => [...prev, order]);
+                setDisplay(true);
               }
             }
           }
-          setDisplay(true);
         }
       }
       setLoading(false);
     });
+    return () => {
+      setDelivered([]);
+    };
   }, [navigate]);
 
   if (loading) {
@@ -71,7 +67,7 @@ const Pending = () => {
   return (
     <div>
       <div className="mx-3 pt-3 lead text-muted d-flex justify-content-between align-items-center">
-        <span>Pending Orders</span>
+        <span>Delivered Orders</span>
         <span>
           <Link to="/" className="text-decoration-none ridelink-color">
             <FaTimes
@@ -82,8 +78,8 @@ const Pending = () => {
         </span>
       </div>
 
-      <div className="d-flex flex-wrap">
-        {pending.map((order, index) => {
+      <div className="d-flex flex-wrap justify-content-center">
+        {delivered.map((order, index) => {
           return (
             <div
               className="d-flex flex-row m-3 p-4 bg-white shadow-sm rounded"
@@ -157,12 +153,12 @@ const Pending = () => {
                 </div>
 
                 <div className="d-flex flex-column my-2">
-                  <span className="px-1 text-muted">{order.date}</span>
+                  <span className="px-1 text-muted">{order.scheduleDate}</span>
                   <span
                     className="px-1"
                     style={{ fontSize: ".6em", fontWeight: "lighter" }}
                   >
-                    Proposed Date
+                    Scheduled Date
                   </span>
                 </div>
                 <div className="d-flex flex-column my-2">
@@ -200,16 +196,6 @@ const Pending = () => {
                     </span>
                   </div>
                 )}
-                <div className="px-1 my-2">
-                  <button
-                    className="btn ridelink-background text-white "
-                    onClick={(e) =>
-                      handleConfirm(e, order.id, order.scheduleDate)
-                    }
-                  >
-                    Confirm
-                  </button>
-                </div>
               </div>
             </div>
           );
@@ -229,4 +215,4 @@ const Pending = () => {
     </div>
   );
 };
-export default Pending;
+export default Delivered;

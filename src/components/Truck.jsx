@@ -4,11 +4,11 @@ import { FaCheck, FaClock } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../config/firebase";
 
-import { useData } from "../context/StateProvider";
+import { useOrders } from "../context/StateProvider";
 import Loader from "./Loader";
 
 const Truck = () => {
-  const { data } = useData();
+  const { data } = useOrders();
   const [available, setAvailable] = useState(0);
   const [display, setDisplay] = useState(false);
   const [loading, setLoading] = useState(true);

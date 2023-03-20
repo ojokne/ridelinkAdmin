@@ -12,6 +12,8 @@ import TruckOwner from "./components/TruckOwner";
 import Pending from "./components/Pending";
 import Confirmed from "./components/Confirmed";
 import Confirm from "./components/Confirm";
+import Delivered from "./components/Delivered";
+import Trip from "./components/Trip";
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
         <Route path="/" element={<Home />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="pending" element={<Pending />} />
+          <Route path="trip" element={<Trip />} />
+          <Route path="delivered" element={<Delivered />} />
           <Route path="confirmed" element={<Confirmed />} />
           <Route path="clients" element={<Client />} />
           <Route path="drivers" element={<Driver />} />

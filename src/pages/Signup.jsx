@@ -21,7 +21,7 @@ const Signup = () => {
     alert: false,
     message: "",
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -114,14 +114,14 @@ const Signup = () => {
     }
   };
 
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        navigate("/");
-      }
-      setLoading(false);
-    });
-  }, [navigate]);
+  // useEffect(() => {
+  //   onAuthStateChanged(auth, (user) => {
+  //     if (user) {
+  //       navigate("/");
+  //     }
+  //     setLoading(false);
+  //   });
+  // }, [navigate]);
   if (loading) {
     return <Loader loading={loading} description="Loading" />;
   }

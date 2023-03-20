@@ -1,22 +1,17 @@
 import { onAuthStateChanged } from "firebase/auth";
+import { collection, onSnapshot, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import {
-  FaDollarSign,
-  FaShoppingCart,
-  FaTruckMoving,
-  FaUser,
-} from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import { auth } from "../config/firebase";
+import { FaCheck, FaClock, FaTruckMoving, FaUser } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { auth, db } from "../config/firebase";
 import { ACTIONS } from "../context/actions";
-import { useData } from "../context/StateProvider";
-import useToken from "../utils/useToken";
+import { useOrders } from "../context/StateProvider";
 import Loader from "./Loader";
 // import PieChart from "./PieChart";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
-  const { dataDispatch } = useData();
+  const { ordersDispatch } = useOrders();
   const [data, setData] = useState();
   const [confirmed, setConfirmed] = useState(0);
   const [revenue, setRevenue] = useState(0);
@@ -27,71 +22,67 @@ const Dashboard = () => {
   const [orders, setOrders] = useState([]);
   const [display, setDisplay] = useState(false);
   const navigate = useNavigate();
+
+  const [pending, setPending] = useState(0);
+  const [trip, setTrip] = useState(0);
+  const [delivered, setDelivered] = useState(0);
   // const [element, setElement] = useState(null);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     setLoading(true);
-  //     try {
-  //       const res = await fetch(
-  //         `${process.env.REACT_APP_API_HOST}/admin/data`,
-  //         {
-  //           method: "GET",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //             Authorization: token,
-  //           },
-  //         }
-  //       );
-  //       const data = await res.json();
-  //       setData((prev) => {
-  //         return { ...prev, data: data.data };
-  //       });
-  //       dataDispatch({ type: ACTIONS.ADD_DATA, data: data.data });
-  //       if (data.data) {
-  //         setDrivers(data.data.drivers.length);
-  //         setClients(data.data.clients.length);
-  //         setTrucks(data.data.trucks.length);
-  //         setTruckOwners(data.data.truckOwners.length);
-  //         setOrders(data.data.orders.length);
-
-  //         for (let i = 0; i < data.data.orders.length; i++) {
-  //           let order = data.data.orders[i];
-  //           if (order.isConfirmed) {
-  //             setConfirmed((prev) => prev + 1);
-  //           }
-  //           setRevenue((prev) => prev + order.amountQuoted);
-  //         }
-  //         setDisplay(true);
-  //       }
-  //       // setElement(() => {
-  //       //   return data.data.orders.length > 0 ? (
-  //       //     <PieChart
-  //       //       confirmed={confirmed}
-  //       //       pending={data.data.orders.length - confirmed}
-  //       //     />
-  //       //   ) : (
-  //       //     <div className="lead text-muted">
-  //       //       <span>No orders to plot chart</span>
-  //       //     </div>
-  //       //   );
-  //       // });
-  //       setLoading(false);
-  //     } catch (e) {
-  //       console.log(e);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [dataDispatch]);
-
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
+    let unsubcribeFromFirestore;
+    const unsubcribeFromAuth = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const querySnapShot = query(collection(db, "eOrders"), "eOrders");
+        unsubcribeFromFirestore = onSnapshot(querySnapShot, (snapshot) => {
+          if (snapshot.empty) {
+            setDisplay(false);
+            setLoading(false);
+          } else {
+            for (let i = 0; i < snapshot.docs.length; i++) {
+              let order = snapshot.docs[i].data();
+              if (order.isConfirmed) {
+                if (order.isDelivered) {
+                  setDelivered((prev) => prev + 1);
+                } else {
+                  setTrip((prev) => prev + 1);
+                }
+              } else {
+                setPending((prev) => prev + 1);
+              }
+            }
+
+            let ordersArray = [];
+            for (let i = 0; i < snapshot.docs.length; i++) {
+              const order = {
+                ...snapshot.docs[i].data(),
+                id: snapshot.docs[i].id,
+              };
+              ordersArray.push(order);
+            }
+
+            ordersDispatch({ type: ACTIONS.ADD_ORDERS, orders: ordersArray });
+            setLoading(false);
+            setDisplay(true);
+          }
+        });
+      } else {
         navigate("/login");
+        if (unsubcribeFromFirestore) {
+          unsubcribeFromFirestore();
+        }
       }
-      setLoading(false);
     });
+    return () => {
+      unsubcribeFromAuth();
+      setDelivered(0);
+      setTrip(0);
+      setPending(0);
+      if (unsubcribeFromFirestore) {
+        unsubcribeFromFirestore();
+      }
+    };
   }, [navigate]);
+
   if (loading) {
     return <Loader loading={loading} description="Please wait" />;
   }
@@ -101,21 +92,36 @@ const Dashboard = () => {
         <span>Dashboard</span>
       </div>
       {display && (
-        <div className="d-flex justify-content-center align-items-center flex-wrap">
+        <div className="d-flex align-items-center flex-wrap">
           <div
             style={{ width: "367px" }}
             className="m-3 p-4 bg-white shadow-sm rounded"
           >
             <span className="text-muted" style={{ fontSize: "20px" }}>
-              Orders
+              Pending Orders
             </span>
             <div className="d-flex align-items-center">
               <span>
-                <FaShoppingCart className="icon iconMenu me-3" />
+                <FaClock
+                  className="icon iconMenu me-3"
+                  style={{ backgroundColor: "#ffc107" }}
+                />
               </span>
               <span className="me-3" style={{ fontSize: "30px" }}>
-                {orders}
+                {pending}
               </span>
+            </div>
+            <div className="mt-3">
+              {pending > 0 ? (
+                <Link
+                  to="pending"
+                  className="text-decoration-none ridelink-color"
+                >
+                  View orders pending confirmation
+                </Link>
+              ) : (
+                <span className="text-muted">No orders delivered</span>
+              )}
             </div>
           </div>
           <div
@@ -123,15 +129,27 @@ const Dashboard = () => {
             className="m-3 p-4 bg-white shadow-sm rounded"
           >
             <span className="text-muted" style={{ fontSize: "20px" }}>
-              Revenue
+              On Trip
             </span>
             <div className="d-flex align-items-center">
               <span>
-                <FaDollarSign className="icon iconMenu me-3" />
+                <FaTruckMoving
+                  className="icon iconMenu me-3"
+                  style={{ backgroundColor: "#ffc107" }}
+                />
               </span>
               <span className="me-3" style={{ fontSize: "30px" }}>
-                {revenue.toLocaleString("en-US")}
+                {trip}
               </span>
+            </div>
+            <div className="mt-3">
+              {trip > 0 ? (
+                <Link to="trip" className="text-decoration-none ridelink-color">
+                  View orders on trip
+                </Link>
+              ) : (
+                <span className="text-muted">No orders on trip</span>
+              )}
             </div>
           </div>
           <div
@@ -139,63 +157,27 @@ const Dashboard = () => {
             className="m-3 p-4 bg-white shadow-sm rounded"
           >
             <span className="text-muted" style={{ fontSize: "20px" }}>
-              Clients
+              Delivered
             </span>
             <div className="d-flex align-items-center">
               <span>
-                <FaUser className="icon iconMenu me-3" />
+                <FaCheck className="icon iconMenu me-3" />
               </span>
               <span className="me-3" style={{ fontSize: "30px" }}>
-                {clients}
+                {delivered}
               </span>
             </div>
-          </div>
-          <div
-            style={{ width: "367px" }}
-            className="m-3 p-4 bg-white shadow-sm rounded"
-          >
-            <span className="text-muted" style={{ fontSize: "20px" }}>
-              Drivers
-            </span>
-            <div className="d-flex align-items-center">
-              <span>
-                <FaUser className="icon iconMenu me-3" />
-              </span>
-              <span className="me-3" style={{ fontSize: "30px" }}>
-                {drivers}
-              </span>
-            </div>
-          </div>
-          <div
-            style={{ width: "367px" }}
-            className="m-3 p-4 bg-white shadow-sm rounded"
-          >
-            <span className="text-muted" style={{ fontSize: "20px" }}>
-              Trucks
-            </span>
-            <div className="d-flex align-items-center">
-              <span>
-                <FaTruckMoving className="icon iconMenu me-3" />
-              </span>
-              <span className="me-3" style={{ fontSize: "30px" }}>
-                {trucks}
-              </span>
-            </div>
-          </div>
-          <div
-            style={{ width: "367px" }}
-            className="m-3 p-4 bg-white shadow-sm rounded"
-          >
-            <span className="text-muted" style={{ fontSize: "20px" }}>
-              Truck Owners
-            </span>
-            <div className="d-flex align-items-center">
-              <span>
-                <FaUser className="icon iconMenu me-3" />
-              </span>
-              <span className="me-3" style={{ fontSize: "30px" }}>
-                {truckOwners}
-              </span>
+            <div className="mt-3">
+              {delivered > 0 ? (
+                <Link
+                  to="delivered"
+                  className="text-decoration-none ridelink-color"
+                >
+                  View orders delivered
+                </Link>
+              ) : (
+                <span className="text-muted">No orders delivered</span>
+              )}
             </div>
           </div>
         </div>

@@ -6,6 +6,7 @@ import {
   FaSignOutAlt,
   FaTasks,
   FaTruckLoading,
+  FaTruckMoving,
   FaUser,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -41,7 +42,49 @@ const MobileMenu = ({ handleShowMenu }) => {
             </span>
           </li>
         </Link>
-        <li className="py-2 border-bottom d-flex justify-content-between align-items-center">
+        <Link
+          className="text-decoration-none"
+          to="pending"
+          onClick={() => handleShowMenu()}
+        >
+          <li className="py-2 border-bottom liMenu d-flex justify-content-between align-items-center">
+            <span className="text-muted">Pending Orders</span>
+            <span>
+              <FaClock
+                className="icon iconMenu"
+                style={{ backgroundColor: "#ffc107" }}
+              />
+            </span>
+          </li>
+        </Link>
+        <Link
+          className="text-decoration-none"
+          to="trip"
+          onClick={() => handleShowMenu()}
+        >
+          <li className="py-2 border-bottom liMenu d-flex justify-content-between align-items-center">
+            <span className="text-muted">On Trip</span>
+            <span>
+              <FaTruckMoving
+                className="icon iconMenu"
+                style={{ backgroundColor: "#ffc107" }}
+              />
+            </span>
+          </li>
+        </Link>
+        <Link
+          className="text-decoration-none"
+          to="delivered"
+          onClick={() => handleShowMenu()}
+        >
+          <li className="py-2 border-bottom liMenu d-flex justify-content-between align-items-center">
+            <span className="text-muted">Delivered Orders</span>
+            <span>
+              <FaCheck className="icon iconMenu" />
+            </span>
+          </li>
+        </Link>
+        {/* <li className="py-2 border-bottom d-flex justify-content-between align-items-center">
           <div className="dropdown">
             <button
               className=" btn btn-outline-secondary dropdown-toggle"
@@ -85,9 +128,9 @@ const MobileMenu = ({ handleShowMenu }) => {
           <span>
             <FaShoppingCart className="icon iconMenu" />
           </span>
-        </li>
+        </li> */}
 
-        <Link
+        {/* <Link
           className="text-decoration-none"
           to="clients"
           onClick={() => handleShowMenu()}
@@ -98,8 +141,8 @@ const MobileMenu = ({ handleShowMenu }) => {
               <FaUser className="icon iconMenu" />
             </span>
           </li>
-        </Link>
-        <Link
+        </Link> */}
+        {/* <Link
           className="text-decoration-none"
           to="drivers"
           onClick={() => handleShowMenu()}
@@ -110,9 +153,9 @@ const MobileMenu = ({ handleShowMenu }) => {
               <FaUser className="icon iconMenu" />
             </span>
           </li>
-        </Link>
+        </Link> */}
 
-        <Link
+        {/* <Link
           className="text-decoration-none"
           to="trucks"
           onClick={() => handleShowMenu()}
@@ -123,8 +166,8 @@ const MobileMenu = ({ handleShowMenu }) => {
               <FaTruckLoading className="icon iconMenu" />
             </span>
           </li>
-        </Link>
-        <Link
+        </Link> */}
+        {/* <Link
           className="text-decoration-none"
           to="truck_owners"
           onClick={() => handleShowMenu()}
@@ -135,7 +178,7 @@ const MobileMenu = ({ handleShowMenu }) => {
               <FaUser className="icon iconMenu" />
             </span>
           </li>
-        </Link>
+        </Link> */}
         <li
           className="py-2 d-flex align-items-center liMenu d-flex justify-content-between align-items-center"
           onClick={(e) => {

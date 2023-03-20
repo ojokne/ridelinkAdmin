@@ -1,4 +1,4 @@
-import { useData } from "../context/StateProvider";
+import { useOrders } from "../context/StateProvider";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
@@ -6,7 +6,7 @@ import { auth } from "../config/firebase";
 import Loader from "./Loader";
 
 const TruckOwner = () => {
-  const { data } = useData();
+  const { data } = useOrders();
   const [display, setDisplay] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();

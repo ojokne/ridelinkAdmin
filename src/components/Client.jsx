@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { useData } from "../context/StateProvider";
+import { useOrders } from "../context/StateProvider";
 import { Link, useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../config/firebase";
 import Loader from "./Loader";
 
 const Client = () => {
-  const { data } = useData();
+  const { data } = useOrders();
   const [display, setDisplay] = useState(false);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);

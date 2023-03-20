@@ -1,38 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaCheck, FaShoppingCart } from "react-icons/fa";
-import { useData } from "../context/StateProvider";
+import { useOrders } from "../context/StateProvider";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../config/firebase";
 import Loader from "./Loader";
 
 const Confirmed = () => {
-  const { data } = useData();
+  const { data } = useOrders();
   const [delivered, setDelivered] = useState(0);
   const [confirmed, setConfirmed] = useState(0);
   const [display, setDisplay] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useState(true);
-
-  // useEffect(() => {
-  //   if (data.hasOwnProperty("orders")) {
-  //     if (data.clients.length) {
-  //       for (let i = 0; i < data.orders.length; i++) {
-  //         let order = data.orders[i];
-  //         if (order.isConfirmed) {
-  //           setConfirmed((prev) => prev + 1);
-  //         }
-  //       }
-  //       for (let i = 0; i < data.trips.length; i++) {
-  //         let trip = data.trips[i];
-  //         if (trip.idDelivered) {
-  //           setDelivered((prev) => prev + 1);
-  //         }
-  //       }
-  //     }
-  //     setDisplay(true);
-  //   }
-  // }, [data]);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {

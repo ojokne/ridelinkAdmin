@@ -1,4 +1,4 @@
 export const ACTIONS = {
-  ADD_DATA: "Add data",
-  CLEAR_DATA: "Clear data",
+  ADD_ORDERS: "Add orders",
+  CLEAR_ORDERS: "Clear orders",
 };

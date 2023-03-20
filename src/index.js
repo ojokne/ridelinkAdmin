@@ -7,11 +7,11 @@ import { StateProvider } from "./context/StateProvider";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <StateProvider>
-        <App />
-      </StateProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <BrowserRouter>
+    <StateProvider>
+      <App />
+    </StateProvider>
+  </BrowserRouter>
+  //</React.StrictMode>
 );
